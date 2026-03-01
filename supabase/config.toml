@@ -1,0 +1,16 @@
+project_id = "jqitaduvyqlzhgznfxhd"
+
+[functions.ai-travel-chat]
+verify_jwt = false
+
+[functions.send-sos-alert]
+verify_jwt = false
+
+[functions.trip-planner]
+verify_jwt = false
+
+[functions.hotel-search]
+verify_jwt = false
+
+[functions.transport-search]
+verify_jwt = false
