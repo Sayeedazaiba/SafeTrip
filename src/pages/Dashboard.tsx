@@ -54,7 +54,6 @@ const Dashboard = () => {
           const { latitude, longitude } = position.coords;
           setLocation({ lat: latitude, lng: longitude });
 
-          // Reverse geocoding
           try {
             const response = await fetch(
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
@@ -65,7 +64,6 @@ const Dashboard = () => {
             console.error("Address error:", error);
           }
 
-          // 🌦️ WEATHER FETCH (FIXED SAFELY)
           try {
             const apiKey = "0e0bd1aef54e4ff162326af7a9e9bf89";
 
@@ -148,40 +146,58 @@ const Dashboard = () => {
           Welcome back, {user?.user_metadata?.full_name || "Traveler"}!
         </h2>
 
-        {address && (
-          <Card className="mb-6">
+        {/* ✅ LOCATION UI */}
+        {location && (
+          <Card className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-primary" />
+                Current Location
+              </CardTitle>
+              <CardDescription>Your live location details</CardDescription>
+            </CardHeader>
             <CardContent>
-              <p>{address}</p>
+              <p className="text-sm">{address || "Fetching address..."}</p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Coordinates: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+              </p>
             </CardContent>
           </Card>
         )}
 
-        {/* 🌦️ WEATHER UI (SAFE) */}
-        <Card className="mb-6">
+        {/* 🌦️ ENHANCED WEATHER UI */}
+        <Card className="mb-6 bg-gradient-to-r from-cyan-100 via-blue-100 to-purple-100 shadow-md">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Cloud className="w-5 h-5" />
-              Weather
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Cloud className="w-6 h-6 text-blue-600" />
+              Weather Forecast
             </CardTitle>
           </CardHeader>
+
           <CardContent>
             {weather && weather.main ? (
-              <div>
-                <p className="text-xl font-semibold">
-                  {weather.main.temp}°C
-                </p>
-                <p>{weather.weather[0].description}</p>
-                <p className="text-sm text-muted-foreground">
-                  Humidity: {weather.main.humidity}%
-                </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-4xl font-bold text-gray-800">
+                    {Math.round(weather.main.temp)}°C
+                  </p>
+                  <p className="capitalize text-md text-gray-600">
+                    {weather.weather[0].description}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Humidity: {weather.main.humidity}%
+                  </p>
+                </div>
+
+                
               </div>
             ) : (
-              <p>Loading weather...</p>
+              <p className="text-gray-500">Loading weather...</p>
             )}
           </CardContent>
         </Card>
 
-        {/* Features */}
+        {/* FEATURES */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {features.map((f) => (
             <Card key={f.route} onClick={() => navigate(f.route)} className="cursor-pointer">
