@@ -25,41 +25,36 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [address, setAddress] = useState<string>("");
+  const [weather, setWeather] = useState<any>(null);
+
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Get current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
-      if (!session) {
-        navigate("/auth");
-      }
+      if (!session) navigate("/auth");
     });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      if (!session) {
-        navigate("/auth");
-      }
+      if (!session) navigate("/auth");
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
   useEffect(() => {
-    // Request location access
     if (navigator.geolocation && user) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
           setLocation({ lat: latitude, lng: longitude });
 
-          // Reverse geocoding to get address
+          // Reverse geocoding
           try {
             const response = await fetch(
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
@@ -67,14 +62,36 @@ const Dashboard = () => {
             const data = await response.json();
             setAddress(data.display_name || "Location unavailable");
           } catch (error) {
-            console.error("Error fetching address:", error);
+            console.error("Address error:", error);
+          }
+
+          // 🌦️ WEATHER FETCH (FIXED SAFELY)
+          try {
+            const apiKey = "0e0bd1aef54e4ff162326af7a9e9bf89";
+
+            const weatherRes = await fetch(
+              `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`
+            );
+
+            if (!weatherRes.ok) {
+              console.log("Weather API failed");
+              return;
+            }
+
+            const weatherData = await weatherRes.json();
+
+            if (weatherData && weatherData.main && weatherData.weather) {
+              setWeather(weatherData);
+            }
+          } catch (error) {
+            console.error("Weather error:", error);
           }
         },
-        (error) => {
+        () => {
           toast({
             variant: "destructive",
             title: "Location access denied",
-            description: "Please enable location access for full safety features.",
+            description: "Enable location for full features.",
           });
         }
       );
@@ -95,62 +112,14 @@ const Dashboard = () => {
   }
 
   const features = [
-    {
-      icon: Shield,
-      title: "SOS Emergency",
-      description: "Double-tap for instant emergency alerts",
-      route: "/sos",
-      color: "text-secondary",
-    },
-    {
-      icon: MapPin,
-      title: "Safety Monitor",
-      description: "Real-time location safety analysis",
-      route: "/safety",
-      color: "text-primary",
-    },
-    {
-      icon: Hotel,
-      title: "Hotel Booking",
-      description: "Find and book safe accommodations",
-      route: "/hotels",
-      color: "text-accent",
-    },
-    {
-      icon: Car,
-      title: "Transport",
-      description: "Book flights, trains, buses & routes",
-      route: "/transport",
-      color: "text-info",
-    },
-    {
-      icon: FileText,
-      title: "Document Vault",
-      description: "Secure storage for important documents",
-      route: "/documents",
-      color: "text-warning",
-    },
-    {
-      icon: MessageSquare,
-      title: "AI Travel Assistant",
-      description: "Get instant travel advice & tips",
-      route: "/chat",
-      color: "text-success",
-    },
-    {
-      icon: DollarSign,
-      title: "Currency Converter",
-      description: "Convert currencies in real-time",
-      route: "/currency",
-      color: "text-primary",
-    },
-    {
-      icon: Sparkles,
-      title: "Trip Planner",
-      description: "AI-powered trip itineraries",
-      route: "/trip-planner",
-      color: "text-accent",
-    },
+    { icon: Shield, title: "SOS Emergency", description: "Double-tap for alerts", route: "/sos", color: "text-secondary" },
+    { icon: MapPin, title: "Safety Monitor", description: "Real-time safety", route: "/safety", color: "text-primary" },
+    { icon: Hotel, title: "Hotel Booking", description: "Safe stays", route: "/hotels", color: "text-accent" },
+    { icon: Car, title: "Transport", description: "Flights & routes", route: "/transport", color: "text-info" },
+    { icon: FileText, title: "Documents", description: "Secure vault", route: "/documents", color: "text-warning" },
+    { icon: MessageSquare, title: "AI Assistant", description: "Travel help", route: "/chat", color: "text-success" },
+    { icon: DollarSign, title: "Currency", description: "Live conversion", route: "/currency", color: "text-primary" },
+    { icon: Sparkles, title: "Trip Planner", description: "AI itineraries", route: "/trip-planner", color: "text-accent" },
   ];
 
   return (
@@ -175,66 +144,55 @@ const Dashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <section className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">
-            Welcome back, {user?.user_metadata?.full_name || "Traveler"}!
-          </h2>
-          <p className="text-muted-foreground">Your safety is our priority</p>
-        </section>
+        <h2 className="text-3xl font-bold mb-6">
+          Welcome back, {user?.user_metadata?.full_name || "Traveler"}!
+        </h2>
 
-        {/* Current Location */}
         {address && (
-          <Card className="mb-8 bg-gradient-to-r from-primary/10 to-accent/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" />
-                Current Location
-              </CardTitle>
-            </CardHeader>
+          <Card className="mb-6">
             <CardContent>
-              <p className="text-sm">{address}</p>
-              {location && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  Coordinates: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                </p>
-              )}
+              <p>{address}</p>
             </CardContent>
           </Card>
         )}
 
-        {/* Weather Widget */}
-        <Card className="mb-8">
+        {/* 🌦️ WEATHER UI (SAFE) */}
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Cloud className="w-5 h-5 text-info" />
-              Weather Forecast
+              <Cloud className="w-5 h-5" />
+              Weather
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">Loading current weather...</p>
+            {weather && weather.main ? (
+              <div>
+                <p className="text-xl font-semibold">
+                  {weather.main.temp}°C
+                </p>
+                <p>{weather.weather[0].description}</p>
+                <p className="text-sm text-muted-foreground">
+                  Humidity: {weather.main.humidity}%
+                </p>
+              </div>
+            ) : (
+              <p>Loading weather...</p>
+            )}
           </CardContent>
         </Card>
 
-        {/* Features Grid */}
-        <section>
-          <h3 className="text-2xl font-bold mb-6">Quick Access</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature) => (
-              <Card
-                key={feature.route}
-                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
-                onClick={() => navigate(feature.route)}
-              >
-                <CardHeader>
-                  <feature.icon className={`w-8 h-8 ${feature.color} mb-2`} />
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
-                  <CardDescription>{feature.description}</CardDescription>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
-        </section>
+        {/* Features */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {features.map((f) => (
+            <Card key={f.route} onClick={() => navigate(f.route)} className="cursor-pointer">
+              <CardHeader>
+                <f.icon className={`w-6 h-6 ${f.color}`} />
+                <CardTitle>{f.title}</CardTitle>
+                <CardDescription>{f.description}</CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
       </main>
     </div>
   );
