@@ -13,7 +13,11 @@ import Documents from "./pages/Documents";
 import Chat from "./pages/Chat";
 import Currency from "./pages/Currency";
 import TripPlanner from "./pages/TripPlanner";
-import NotFound from "./pages/NotFound";
+import NotFound from "./pages/NotFound"; 
+import SafePlaces from "./pages/Safeplaces";
+
+
+
 
 const queryClient = new QueryClient();
 
@@ -24,6 +28,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/safeplaces" element={<SafePlaces />} />
           <Route path="/" element={<Dashboard />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/sos" element={<SOS />} />

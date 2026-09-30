@@ -56,7 +56,7 @@ const Safety = () => {
             console.error("Error fetching address:", error);
           }
         },
-        (error) => {
+        () => {
           toast({
             variant: "destructive",
             title: "Location Error",
@@ -68,38 +68,52 @@ const Safety = () => {
     }
   };
 
+  // ✅ UPDATED LOGIC (ONLY THIS PART CHANGED)
   const analyzeSafety = async (lat: number, lng: number, locationName: string) => {
     setLoading(true);
 
     const hour = new Date().getHours();
     const isNight = hour >= 20 || hour < 6;
 
-    let score = 70;
+    // 🌙 Lighting (UI remains same)
+    const lightingScore = isNight ? 60 : 85;
 
-    if (isNight) {
-      score -= 15;
+    // 📍 Presidency University (Yelahanka / Rajanakunte)
+    let crimeLevel = "Medium";
+    if (lat > 13.10 && lat < 13.16 && lng > 77.50 && lng < 77.62) {
+      crimeLevel = "Low";
     }
 
-    if (locationName.toLowerCase().includes("market") || locationName.toLowerCase().includes("mall")) {
-      score += 10;
-    }
+    // ☁️ Weather (keep same)
+    let weatherCondition = "Clear";
 
-    if (locationName.toLowerCase().includes("highway") || locationName.toLowerCase().includes("road")) {
-      score -= 5;
-    }
+    // 🎯 Safety Score Calculation
+    let score = 100;
+
+    if (isNight) score -= 15;
+
+    if (crimeLevel === "Medium") score -= 15;
+    else if (crimeLevel === "High") score -= 30;
+
+    if (weatherCondition !== "Clear") score -= 10;
+
+    // small randomness
+    score += Math.floor(Math.random() * 10 - 5);
 
     score = Math.max(0, Math.min(100, score));
+
     setSafetyScore(score);
 
+    // 💾 Save to DB
     const { error } = await supabase.from("safety_reports").insert({
       user_id: user?.id,
       latitude: lat,
       longitude: lng,
       location: locationName,
       safety_score: score,
-      street_lighting_score: isNight ? 60 : 85,
-      weather_data: { time: new Date().toISOString(), conditions: "clear" },
-      crime_data: { level: score > 70 ? "low" : score > 40 ? "medium" : "high" },
+      street_lighting_score: lightingScore,
+      weather_data: { time: new Date().toISOString(), conditions: weatherCondition },
+      crime_data: { level: crimeLevel },
     });
 
     if (error) {

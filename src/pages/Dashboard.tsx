@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ import {
 import LanguageSelector from "@/components/LanguageSelector";
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -110,7 +112,7 @@ const Dashboard = () => {
   }
 
   const features = [
-    { icon: Shield, title: "SOS Emergency", description: "Double-tap for alerts", route: "/sos", color: "text-secondary" },
+    { icon: Shield, title: t("sos"), description: "Double-tap for alerts", route: "/sos", color: "text-secondary" },
     { icon: MapPin, title: "Safety Monitor", description: "Real-time safety", route: "/safety", color: "text-primary" },
     { icon: Hotel, title: "Hotel Booking", description: "Safe stays", route: "/hotels", color: "text-accent" },
     { icon: Car, title: "Transport", description: "Flights & routes", route: "/transport", color: "text-info" },
@@ -118,6 +120,7 @@ const Dashboard = () => {
     { icon: MessageSquare, title: "AI Assistant", description: "Travel help", route: "/chat", color: "text-success" },
     { icon: DollarSign, title: "Currency", description: "Live conversion", route: "/currency", color: "text-primary" },
     { icon: Sparkles, title: "Trip Planner", description: "AI itineraries", route: "/trip-planner", color: "text-accent" },
+    { icon: MapPin, title: "Assistance", description: "Find nearby help & AI tips", route: "/safeplaces", color: "text-green-500" },
   ];
 
   return (
@@ -143,8 +146,8 @@ const Dashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         <h2 className="text-3xl font-bold mb-6">
-          Welcome back, {user?.user_metadata?.full_name || "Traveler"}!
-        </h2>
+  {t("welcome")}, {user?.user_metadata?.full_name || "Traveler"}!
+</h2>
 
         {/* ✅ LOCATION UI */}
         {location && (
@@ -152,7 +155,7 @@ const Dashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-primary" />
-                Current Location
+                {t("currentLocation")}
               </CardTitle>
               <CardDescription>Your live location details</CardDescription>
             </CardHeader>
@@ -170,7 +173,7 @@ const Dashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
               <Cloud className="w-6 h-6 text-blue-600" />
-              Weather Forecast
+              {t("weather")}
             </CardTitle>
           </CardHeader>
 
