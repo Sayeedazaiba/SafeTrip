@@ -58,7 +58,7 @@ const Dashboard = () => {
 
           try {
             const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`
             );
             const data = await response.json();
             setAddress(data.display_name || "Location unavailable");
@@ -111,18 +111,64 @@ const Dashboard = () => {
     );
   }
 
-  const features = [
-    { icon: Shield, title: t("sos"), description: "Double-tap for alerts", route: "/sos", color: "text-secondary" },
-    { icon: MapPin, title: "Safety Monitor", description: "Real-time safety", route: "/safety", color: "text-primary" },
-    { icon: Hotel, title: "Hotel Booking", description: "Safe stays", route: "/hotels", color: "text-accent" },
-    { icon: Car, title: "Transport", description: "Flights & routes", route: "/transport", color: "text-info" },
-    { icon: FileText, title: "Documents", description: "Secure vault", route: "/documents", color: "text-warning" },
-    { icon: MessageSquare, title: "AI Assistant", description: "Travel help", route: "/chat", color: "text-success" },
-    { icon: DollarSign, title: "Currency", description: "Live conversion", route: "/currency", color: "text-primary" },
-    { icon: Sparkles, title: "Trip Planner", description: "AI itineraries", route: "/trip-planner", color: "text-accent" },
-    { icon: MapPin, title: "Assistance", description: "Find nearby help & AI tips", route: "/safeplaces", color: "text-green-500" },
-  ];
-
+    const features = [
+  {
+    icon: MapPin,
+    title: t("safetyMonitor"),
+    description: t("safetyMonitorDesc"),
+    route: "/safety",
+    color: "text-primary",
+  },
+  {
+    icon: Hotel,
+    title: t("hotelBooking"),
+    description: t("hotelBookingDesc"),
+    route: "/hotels",
+    color: "text-accent",
+  },
+  {
+    icon: Car,
+    title: t("transport"),
+    description: t("transportDesc"),
+    route: "/transport",
+    color: "text-info",
+  },
+  {
+    icon: FileText,
+    title: t("documents"),
+    description: t("documentsDesc"),
+    route: "/documents",
+    color: "text-warning",
+  },
+  {
+    icon: MessageSquare,
+    title: t("aiAssistant"),
+    description: t("aiAssistantDesc"),
+    route: "/chat",
+    color: "text-success",
+  },
+  {
+    icon: DollarSign,
+    title: t("currency"),
+    description: t("currencyDesc"),
+    route: "/currency",
+    color: "text-primary",
+  },
+  {
+    icon: Sparkles,
+    title: t("tripPlanner"),
+    description: t("tripPlannerDesc"),
+    route: "/trip-planner",
+    color: "text-accent",
+  },
+  {
+    icon: MapPin,
+    title: t("assistance"),
+    description: t("assistanceDesc"),
+    route: "/safeplaces",
+    color: "text-green-500",
+  },
+];
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
@@ -157,12 +203,12 @@ const Dashboard = () => {
                 <MapPin className="w-5 h-5 text-primary" />
                 {t("currentLocation")}
               </CardTitle>
-              <CardDescription>Your live location details</CardDescription>
+              <CardDescription>{t("locationDetails")}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm">{address || "Fetching address..."}</p>
+              <p className="text-sm">{address || t("fetchingAddress")}</p>
               <p className="text-xs text-muted-foreground mt-2">
-                Coordinates: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                {t("coordinates")}: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
               </p>
             </CardContent>
           </Card>
@@ -188,14 +234,14 @@ const Dashboard = () => {
                     {weather.weather[0].description}
                   </p>
                   <p className="text-sm text-gray-500 mt-1">
-                    Humidity: {weather.main.humidity}%
+                    {t("humidity")}: {weather.main.humidity}%
                   </p>
                 </div>
 
                 
               </div>
             ) : (
-              <p className="text-gray-500">Loading weather...</p>
+              <p className="text-gray-500">{t("loadingWeather")}</p>
             )}
           </CardContent>
         </Card>
