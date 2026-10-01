@@ -7,12 +7,12 @@
     <img src="https://img.shields.io/badge/Live_Demo-Visit_SafeTrip-6C63FF?style=for-the-badge" alt="Live Demo">
   </a>
   <a href="https://github.com/Sayeedazaiba/SafeTrip">
-    <img src="https://img.shields.io/badge/View_Code-GitHub-181717?style=for-the-badge&logo=github" alt="GitHub">
+    <img src="https://img.shields.io/badge/View_Code-GitHub-181717?style=for-the-badge&logo=github" alt="View Code">
   </a>
 </p>
 
 <p align="center">
-  <a href="[YOUR_DEMO_VIDEO_URL](https://github.com/user-attachments/assets/49f81601-7135-49c8-9127-1f2281fd112b)">
+  <a href="https://github.com/user-attachments/assets/49f81601-7135-49c8-9127-1f2281fd112b">
     <img src="https://img.shields.io/badge/▶_Demo_Video-Watch_Now-FF4B6E?style=for-the-badge" alt="Demo Video">
   </a>
 </p>
