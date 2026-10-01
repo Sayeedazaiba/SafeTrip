@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <a href="YOUR_DEMO_VIDEO_URL">
+  <a href="[YOUR_DEMO_VIDEO_URL](https://github.com/user-attachments/assets/49f81601-7135-49c8-9127-1f2281fd112b)">
     <img src="https://img.shields.io/badge/▶_Demo_Video-Watch_Now-FF4B6E?style=for-the-badge" alt="Demo Video">
   </a>
 </p>
